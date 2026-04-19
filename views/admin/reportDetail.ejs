@@ -310,31 +310,40 @@
     const statusBorder = isVerified ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
 
     blockchainBody.innerHTML = `
-      <div style="text-align: center; margin-bottom: 16px;">
-        <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 18px; border-radius: 50px; font-size: 13px; font-weight: 700; background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusBorder};">${statusText}</span>
+      <div style="text-align: center; margin-bottom: 24px; position: relative;">
+        <i class="fas fa-link" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 80px; opacity: 0.04; color: var(--accent);"></i>
+        <span style="position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 6px 20px; border-radius: 50px; font-size: 14px; font-weight: 700; background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusBorder}; box-shadow: 0 0 15px ${statusBg};">${statusText}</span>
       </div>
-      <div class="detail-row">
-        <span class="d-label">Block ID</span>
-        <span class="d-value" style="font-family: var(--mono); color: var(--accent); font-weight: 700;">#${bc.blockId}</span>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 1;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 6px; border-bottom: 1px solid var(--border);">
+          <span style="font-size: 12px; color: var(--text-3); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Block Sequence</span>
+          <span style="font-family: var(--mono); color: var(--accent); font-weight: 700; font-size: 16px; background: rgba(20, 184, 166, 0.1); padding: 4px 10px; border-radius: 6px;">#${bc.blockId}</span>
+        </div>
+        
+        <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 11px; color: var(--text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;"><i class="fas fa-fingerprint"></i> Block Hash</span>
+          <span style="font-family: var(--mono); font-size: 13px; color: var(--text-2); word-break: break-all; opacity: 0.9;">${bc.hash}</span>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 11px; color: var(--text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;"><i class="fas fa-link"></i> Previous Hash</span>
+          <span style="font-family: var(--mono); font-size: 13px; color: var(--text-2); word-break: break-all; opacity: 0.8;">${bc.previousHash}</span>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px;">
+          <span style="font-size: 11px; color: var(--text-3); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;"><i class="fas fa-file-pdf"></i> PDF Hash Payload</span>
+          <span style="font-family: var(--mono); font-size: 13px; color: var(--text-2); word-break: break-all; opacity: 0.8;">${bc.pdfHash}</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px;">
+          <span style="font-size: 12px; color: var(--text-3); font-weight: 600;"><i class="far fa-clock"></i> Authenticated</span>
+          <span style="font-size: 13px; color: var(--text-2); font-weight: 500;">${formatDate(bc.timestamp)}</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="d-label">Block Hash</span>
-        <span class="d-value mono hash-val" title="${bc.hash}">${shortenHash(bc.hash)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="d-label">Previous Hash</span>
-        <span class="d-value mono hash-val" title="${bc.previousHash}">${shortenHash(bc.previousHash)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="d-label">PDF Hash</span>
-        <span class="d-value mono hash-val" title="${bc.pdfHash}">${shortenHash(bc.pdfHash)}</span>
-      </div>
-      <div class="detail-row">
-        <span class="d-label">Timestamp</span>
-        <span class="d-value">${formatDate(bc.timestamp)}</span>
-      </div>
-      <div style="margin-top: 12px; text-align: center;">
-        <button id="reverify-btn" onclick="reVerifyBlockchain()" style="background: linear-gradient(135deg, rgba(20, 184, 166,0.1), rgba(139,92,246,0.1)); border: 1px solid rgba(20, 184, 166,0.25); color: var(--accent); padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+
+      <div style="margin-top: 24px; text-align: center;">
+        <button id="reverify-btn" onclick="reVerifyBlockchain()" style="background: linear-gradient(135deg, rgba(20, 184, 166,0.1), rgba(139,92,246,0.1)); border: 1px solid rgba(20, 184, 166,0.25); color: var(--accent); padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 0 15px rgba(20, 184, 166, 0.2)'" onmouseout="this.style.boxShadow='none'">
           <i class="fas fa-rotate"></i> Re-Verify Integrity
         </button>
       </div>
@@ -368,17 +377,28 @@
     })
     .then(r => r.json())
     .then(data => {
-      if (data.blockchain) {
-        renderBlockchainStatus({ exists: true, blockchain: { ...data.blockchain, verified: data.verified } });
-      }
-      // Flash the card border briefly
-      const card = document.getElementById('blockchain-card');
-      card.style.borderColor = data.verified ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)';
-      card.style.boxShadow = data.verified ? '0 0 20px rgba(34,197,94,0.15)' : '0 0 20px rgba(239,68,68,0.15)';
+      // Artificial delay (1 second) so the admin actually sees the "Verifying..." spinner 
+      // instead of the math executing instantaneously in 20 milliseconds
       setTimeout(() => {
-        card.style.borderColor = 'rgba(20, 184, 166,0.2)';
-        card.style.boxShadow = 'none';
-      }, 3000);
+        if (data.blockchain) {
+          renderBlockchainStatus({ exists: true, blockchain: { ...data.blockchain, verified: data.verified } });
+        }
+        
+        // Dynamic Pulse Animation (Card Flash)
+        const card = document.getElementById('blockchain-card');
+        if(card) {
+          card.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+          card.style.borderColor = data.verified ? 'rgba(34,197,94,0.8)' : 'rgba(239,68,68,0.8)';
+          card.style.boxShadow = data.verified ? '0 0 30px rgba(34,197,94,0.25)' : '0 0 30px rgba(239,68,68,0.25)';
+          card.style.transform = 'scale(1.02)';
+          
+          setTimeout(() => {
+            card.style.transform = 'scale(1)';
+            card.style.borderColor = 'rgba(20, 184, 166,0.2)';
+            card.style.boxShadow = 'none';
+          }, 1500);
+        }
+      }, 1000);
     })
     .catch(err => {
       if (btn) {

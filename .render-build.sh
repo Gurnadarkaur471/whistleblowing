@@ -30,7 +30,10 @@ apt-get install -y \
 # 1. Install Node modules
 npm install
 
-# 2. Configure Puppeteer to use Render's persistent cache directory
+# 2. Explicitly download the precise Chrome binaries required for this version of Puppeteer
+npx puppeteer browsers install chrome
+
+# 3. Configure Puppeteer to use Render's persistent cache directory
 export PUPPETEER_CACHE_DIR=/opt/render/project/puppeteer
 
 echo "Build Configuration Complete!"

@@ -171,8 +171,9 @@
               return;
             }
             const durationSecs = Math.max(1, Math.round((Date.now() - startTime) / 1000));
-            // Specifically use audio/webm without codecs string to solve Chrome blob streaming bug
-            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            // Resolve exact audio extension dynamically to prevent codec corruption (Safari mp4 vs Chrome webm)
+            const actualMimeType = mediaRecorder.mimeType || 'audio/webm';
+            const audioBlob = new Blob(audioChunks, { type: actualMimeType });
             const audioUrl = URL.createObjectURL(audioBlob);
             audioPlayback.src = audioUrl;
             audioPlayback.load(); // Intelligently force the DOM engine to mount the stream
@@ -193,8 +194,12 @@
 
             audioPreviewBlock.style.display = 'flex';
             
-            // Set the Blob into the hidden file input
-            const file = new File([audioBlob], "voice_evidence.webm", { type: "audio/webm" });
+            let ext = 'webm';
+            if (actualMimeType.includes('mp4') || actualMimeType.includes('aac')) ext = 'm4a';
+            else if (actualMimeType.includes('ogg')) ext = 'ogg';
+
+            // Set the explicitly paired Blob into the hidden file input
+            const file = new File([audioBlob], `voice_evidence.${ext}`, { type: actualMimeType });
             const dt = new DataTransfer();
             dt.items.add(file);
             audioBlobInput.files = dt.files;
