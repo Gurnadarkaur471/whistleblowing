@@ -1,0 +1,42 @@
+<%- include('../partials/head') %>
+<% locals.currentPage = 'audit'; %>
+<%- include('../partials/adminSidebar', { admin, csrfToken: locals.csrfToken || '' }) %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="page-title">Audit Logs</h1>
+    <p class="page-subtitle">Complete record of all administrative actions</p>
+  </div>
+</div>
+
+<div class="dash-card">
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Admin</th>
+          <th>Action</th>
+          <th>Target</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% logs.forEach(log => { %>
+        <tr>
+          <td class="mono date-cell"><%= new Date(log.timestamp).toLocaleString() %></td>
+          <td><%= log.adminEmail || '—' %></td>
+          <td><span class="audit-action-badge"><%= log.action %></span></td>
+          <td><span class="mono" style="font-size:11px"><%= log.targetId || '—' %></span></td>
+          <td><%= log.details || '—' %></td>
+        </tr>
+        <% }) %>
+        <% if (!logs.length) { %>
+        <tr><td colspan="5" class="empty-row"><i class="fas fa-scroll"></i> No audit logs yet</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/adminClose') %>

@@ -1,0 +1,36 @@
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fas fa-shield-halved"></i>
+      <span>Secure<span class="accent">Voice</span></span>
+    </div>
+    <div class="sidebar-admin">
+      <div class="admin-avatar"><i class="fas fa-user-shield"></i></div>
+      <div class="admin-info">
+        <span class="admin-name"><%= admin.name %></span>
+        <span class="admin-role">Administrator</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/admin/dashboard" class="sidebar-link <%= currentPage === 'dashboard' ? 'active' : '' %>">
+        <i class="fas fa-chart-line"></i> Dashboard
+      </a>
+      <a href="/admin/reports" class="sidebar-link <%= currentPage === 'reports' ? 'active' : '' %>">
+        <i class="fas fa-file-shield"></i> Reports
+      </a>
+      <a href="/admin/audit-logs" class="sidebar-link <%= currentPage === 'audit' ? 'active' : '' %>">
+        <i class="fas fa-scroll"></i> Audit Logs
+      </a>
+    </nav>
+    <button class="theme-toggle-sidebar theme-toggle-btn" aria-label="Switch theme" style="margin-top: 16px;">
+      <i class="fas fa-sun"></i> <span class="theme-label">Light Mode</span>
+    </button>
+    <form action="/admin/logout" method="POST" style="margin-top:auto">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="sidebar-logout">
+        <i class="fas fa-right-from-bracket"></i> Logout
+      </button>
+    </form>
+  </aside>
+  <main class="admin-main">
+

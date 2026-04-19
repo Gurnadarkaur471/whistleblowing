@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="/css/main.css" />
+  <script>(function(){var t=localStorage.getItem('sv-theme');if(t==='light')document.documentElement.setAttribute('data-theme','light');})();</script>
+  <script src="/js/theme.js" defer></script>
+</head>
+<body class="admin-auth-body">
+  <!-- Theme toggle for login page -->
+  <button class="theme-toggle-btn" aria-label="Switch theme" style="position: fixed; top: 16px; right: 16px; z-index: 100;">
+    <i class="fas fa-sun"></i>
+    <span class="theme-label">Light Mode</span>
+  </button>
+  <div class="admin-login-wrapper">
+    <div class="login-left">
+      <div class="login-brand">
+        <i class="fas fa-shield-halved"></i>
+        <span>Secure<span class="accent">Voice</span></span>
+      </div>
+      <h1>Security Operations Center</h1>
+      <p>Authorized personnel only. All actions are logged and audited.</p>
+      <div class="login-features">
+        <div><i class="fas fa-eye"></i> Full audit trail</div>
+        <div><i class="fas fa-chart-line"></i> Real-time threat monitoring</div>
+        <div><i class="fas fa-lock"></i> Encrypted data access</div>
+      </div>
+    </div>
+    <div class="login-right">
+      <div class="login-card">
+        <div class="login-card-header">
+          <i class="fas fa-user-shield"></i>
+          <h2>Admin Login</h2>
+          <p>Enter your credentials to access the SOC dashboard.</p>
+        </div>
+
+        <% if (error) { %>
+        <div class="alert alert-error"><i class="fas fa-triangle-exclamation"></i> <%= error %></div>
+        <% } %>
+
+        <form action="/admin/login" method="POST">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+            <input type="email" id="email" name="email" placeholder="admin@securevoice.gov" required autocomplete="username" />
+          </div>
+          <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Password</label>
+            <div class="password-wrap">
+              <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" />
+              <button type="button" class="toggle-pw" onclick="togglePw()"><i class="fas fa-eye" id="eyeIcon"></i></button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px">
+            <i class="fas fa-right-to-bracket"></i> Login to SOC
+          </button>
+        </form>
+
+        <div class="login-footer-note">
+          <i class="fas fa-info-circle"></i>
+          Max 10 login attempts per 15 minutes. All activity is audited.
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function togglePw() {
+      const pw = document.getElementById('password');
+      const icon = document.getElementById('eyeIcon');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+      } else {
+        pw.type = 'password';
+        icon.className = 'fas fa-eye';
+      }
+    }
+  </script>
+</body>
+</html>

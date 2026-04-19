@@ -1,0 +1,77 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="page-wrapper">
+  <div class="confirmation-page">
+    <div class="confirmation-icon">
+      <i class="fas fa-circle-check"></i>
+    </div>
+    <h1>Report Submitted Successfully</h1>
+    <p class="conf-subtitle">Your report has been securely received and encrypted. Investigators will review it shortly.</p>
+
+    <div class="ack-card">
+      <div class="ack-label"><i class="fas fa-ticket"></i> Your Acknowledgement Number</div>
+      <div class="ack-number" id="ackNumber"><%= report.ackNumber %></div>
+      <button class="btn btn-outline btn-sm" onclick="copyAck()">
+        <i class="fas fa-copy"></i> Copy
+      </button>
+      <p class="ack-warning">
+        <i class="fas fa-triangle-exclamation"></i>
+        <strong>Save this number.</strong> It is the ONLY way to track your report. It is not stored anywhere else.
+      </p>
+    </div>
+
+    <div class="report-summary">
+      <h3>Report Summary</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="s-label">Category</span>
+          <span class="s-value"><%= report.category %></span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Severity</span>
+          <span class="s-value severity-badge <%= report.severity %>"><%= report.severity %></span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Status</span>
+          <span class="s-value status-badge pending">Pending Review</span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Submitted</span>
+          <span class="s-value"><%= new Date(report.submittedAt).toLocaleString() %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="security-assurance">
+      <h3><i class="fas fa-shield-halved"></i> Security Assurances</h3>
+      <ul>
+        <li><i class="fas fa-check"></i> Your IP address was hashed and the original is not stored</li>
+        <li><i class="fas fa-check"></i> Any personal details you provided are AES-256 encrypted</li>
+        <li><i class="fas fa-check"></i> Report integrity is protected by SHA-256 hash chain</li>
+        <li><i class="fas fa-check"></i> Evidence files stored outside public access with renamed hashes</li>
+      </ul>
+    </div>
+
+    <div class="confirmation-actions">
+      <a href="/report/track" class="btn btn-primary">
+        <i class="fas fa-search"></i> Track This Report
+      </a>
+      <a href="/" class="btn btn-outline">
+        <i class="fas fa-home"></i> Return Home
+      </a>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<script>
+function copyAck() {
+  const text = document.getElementById('ackNumber').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-sm');
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => { btn.innerHTML = '<i class="fas fa-copy"></i> Copy'; }, 2000);
+  });
+}
+</script>

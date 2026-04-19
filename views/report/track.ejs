@@ -1,0 +1,97 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="page-wrapper">
+  <div class="form-page" style="max-width:600px">
+    <div class="form-header">
+      <div class="form-badge"><i class="fas fa-search"></i> Secure Lookup</div>
+      <h1>Track Your Report</h1>
+      <p>Enter your acknowledgement number to check the status of your submission.</p>
+    </div>
+
+    <% if (error) { %>
+    <div class="alert alert-error"><i class="fas fa-triangle-exclamation"></i> <%= error %></div>
+    <% } %>
+
+    <form action="/report/track" method="POST" class="report-form">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <div class="form-group">
+        <label for="ackNumber">Acknowledgement Number</label>
+        <input type="text" id="ackNumber" name="ackNumber"
+          placeholder="e.g. SV-20240115-A3F2B1C9"
+          pattern="SV-\d{8}-[A-F0-9]{8}"
+          title="Format: SV-YYYYMMDD-XXXXXXXX"
+          required style="font-family: 'JetBrains Mono', monospace; letter-spacing:2px; text-transform:uppercase" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%">
+        <i class="fas fa-search"></i> Track Report
+      </button>
+    </form>
+
+    <% if (result) { %>
+    <div class="track-result">
+      <h3><i class="fas fa-file-shield"></i> Report Found</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="s-label">Ack Number</span>
+          <span class="s-value mono"><%= result.ackNumber %></span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Category</span>
+          <span class="s-value"><%= result.category %></span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Severity</span>
+          <span class="s-value severity-badge <%= result.severity %>"><%= result.severity %></span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Current Status</span>
+          <span class="s-value status-badge <%= result.status %>"><%= result.status.replace('_',' ') %></span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Submitted</span>
+          <span class="s-value"><%= new Date(result.submittedAt).toLocaleDateString() %></span>
+        </div>
+        <div class="summary-item">
+          <span class="s-label">Last Updated</span>
+          <span class="s-value"><%= new Date(result.updatedAt).toLocaleDateString() %></span>
+        </div>
+      </div>
+      <div class="status-timeline">
+        <% const statuses = ['pending','under_review','investigating','resolved']; %>
+        <% const currentIdx = statuses.indexOf(result.status); %>
+        <% statuses.forEach((s, i) => { %>
+        <div class="timeline-step <%= i <= currentIdx ? 'done' : '' %>">
+          <div class="tl-dot"><% if(i <= currentIdx) { %><i class="fas fa-check"></i><% } %></div>
+          <span><%= s.replace('_',' ') %></span>
+        </div>
+        <% if(i < statuses.length - 1) { %><div class="tl-line <%= i < currentIdx ? 'done' : '' %>"></div><% } %>
+        <% }) %>
+      </div>
+      </div>
+
+      <hr style="border:0; height:1px; background:#e2e8f0; margin: 30px 0;">
+
+      <!-- Dead Drop Messaging UI -->
+      <div class="dead-drop-messaging">
+        <h3 style="margin-bottom:15px;"><i class="fas fa-comment-dots"></i> Secure Messages</h3>
+        <p style="font-size:13px; color:#64748b; margin-bottom:15px;">Communicate anonymously with the admin team. E2E encrypted.</p>
+        
+        <div id="messageList" class="message-list" style="max-height:300px; overflow-y:auto; background:#f8fafc; border-radius:8px; padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;">
+          <!-- Messages will be populated by JS -->
+        </div>
+
+        <div class="message-input-area" style="display:flex; gap:10px;">
+          <input type="text" id="messageInput" placeholder="Type a secure message..." style="flex:1;" autocomplete="off" />
+          <button type="button" id="sendMsgBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+
+    </div>
+    <script>window.TRACKING_ID = "<%= result.ackNumber %>"; window.CSRF_TOKEN = "<%= csrfToken %>";</script>
+    <script src="/js/track.js"></script>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

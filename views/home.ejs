@@ -1,0 +1,119 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-container">
+    <div class="hero-badge animate-on-scroll delay-1"><i class="fas fa-lock"></i> 100% Anonymous & Encrypted</div>
+    <h1 class="hero-title animate-on-scroll delay-1">
+      Speak Truth.<br/>
+      <span class="accent">Stay Safe.</span>
+    </h1>
+    <p class="hero-subtitle animate-on-scroll delay-2">
+      SecureVoice is a military-grade anonymous whistleblowing platform. 
+      Your identity is protected by AES-256 encryption. No IP addresses stored. 
+      No personal data exposed.
+    </p>
+    <div class="hero-actions animate-on-scroll delay-3">
+      <a href="/report/submit" class="btn btn-primary btn-lg">
+        <i class="fas fa-flag"></i> Submit Anonymous Report
+      </a>
+      <a href="/report/track" class="btn btn-outline btn-lg">
+        <i class="fas fa-search"></i> Track Existing Report
+      </a>
+    </div>
+    <div class="hero-security-badges">
+      <span class="badge"><i class="fas fa-lock"></i> AES-256 Encrypted</span>
+      <span class="badge"><i class="fas fa-eye-slash"></i> No IP Logged</span>
+      <span class="badge"><i class="fas fa-shield-halved"></i> CSRF Protected</span>
+      <span class="badge"><i class="fas fa-user-secret"></i> Zero Identity Leak</span>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="section-container">
+    <div class="section-header animate-on-scroll delay-1">
+      <h2>Why SecureVoice?</h2>
+      <p>Built with cybersecurity-first principles to protect every whistleblower.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card animate-on-scroll delay-2">
+        <div class="feature-icon"><i class="fas fa-key"></i></div>
+        <h3>End-to-End Encryption</h3>
+        <p>All sensitive data encrypted with AES-256-CBC. Unique IV per record. No plaintext ever stored.</p>
+      </div>
+      <div class="feature-card animate-on-scroll delay-2">
+        <div class="feature-icon"><i class="fas fa-fingerprint"></i></div>
+        <h3>Anonymous Submission</h3>
+        <p>IP addresses are hashed using SHA-256 with a salt. Your identity is mathematically impossible to retrieve.</p>
+      </div>
+      <div class="feature-card animate-on-scroll delay-3">
+        <div class="feature-icon"><i class="fas fa-link"></i></div>
+        <h3>Integrity Chain</h3>
+        <p>Blockchain-style hash chaining ensures no report can be silently altered after submission.</p>
+      </div>
+      <div class="feature-card animate-on-scroll delay-3">
+        <div class="feature-icon"><i class="fas fa-receipt"></i></div>
+        <h3>Acknowledgement Number</h3>
+        <p>Receive a unique tracking code to follow up on your report — no account required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+        <h3>AI Risk Scoring</h3>
+        <p>Each report is automatically analyzed for severity and risk using keyword intelligence.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-shield-virus"></i></div>
+        <h3>Threat Detection</h3>
+        <p>Automated detection of spam, duplicate reports, and abnormal submission patterns.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how-it-works">
+  <div class="section-container">
+    <div class="section-header animate-on-scroll delay-1">
+      <h2>How It Works</h2>
+      <p>Simple, secure, and fully anonymous in 3 steps.</p>
+    </div>
+    <div class="steps">
+      <div class="step animate-on-scroll delay-2">
+        <div class="step-number">01</div>
+        <div class="step-content">
+          <h3>Submit Your Report</h3>
+          <p>Fill out the secure form. Your identity is never required. Evidence files are securely stored with metadata stripped.</p>
+        </div>
+      </div>
+      <div class="step-arrow animate-on-scroll delay-2"><i class="fas fa-arrow-right"></i></div>
+      <div class="step animate-on-scroll delay-3">
+        <div class="step-number">02</div>
+        <div class="step-content">
+          <h3>Get Acknowledgement</h3>
+          <p>Receive a unique tracking number (e.g. SV-20240115-A3F2B1C9). Save it — this is your only link to the report.</p>
+        </div>
+      </div>
+      <div class="step-arrow animate-on-scroll delay-3"><i class="fas fa-arrow-right"></i></div>
+      <div class="step animate-on-scroll delay-3">
+        <div class="step-number">03</div>
+        <div class="step-content">
+          <h3>Track Progress</h3>
+          <p>Use your acknowledgement number to check the status anytime. Investigators work behind the scenes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="section-container cta-inner animate-on-scroll delay-1">
+    <h2>Ready to report corruption?</h2>
+    <p>Your voice matters. Your identity stays protected.</p>
+    <a href="/report/submit" class="btn btn-primary btn-lg">
+      <i class="fas fa-flag"></i> Start Anonymous Report
+    </a>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,105 @@
+<%- include('../partials/head') %>
+<% locals.currentPage = 'reports'; %>
+<%- include('../partials/adminSidebar', { admin, csrfToken: locals.csrfToken || '' }) %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="page-title">All Reports</h1>
+    <p class="page-subtitle">Showing <%= total %> total reports</p>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="filter-bar">
+  <form action="/admin/reports" method="GET" class="filter-form">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Statuses</option>
+      <option value="pending" <%= query.status==='pending'?'selected':'' %>>Pending</option>
+      <option value="under_review" <%= query.status==='under_review'?'selected':'' %>>Under Review</option>
+      <option value="investigating" <%= query.status==='investigating'?'selected':'' %>>Investigating</option>
+      <option value="resolved" <%= query.status==='resolved'?'selected':'' %>>Resolved</option>
+      <option value="dismissed" <%= query.status==='dismissed'?'selected':'' %>>Dismissed</option>
+    </select>
+    <select name="risk" onchange="this.form.submit()">
+      <option value="">All Risk Levels</option>
+      <option value="critical" <%= query.risk==='critical'?'selected':'' %>>🔴 Critical</option>
+      <option value="high" <%= query.risk==='high'?'selected':'' %>>🟠 High</option>
+      <option value="medium" <%= query.risk==='medium'?'selected':'' %>>🟡 Medium</option>
+      <option value="low" <%= query.risk==='low'?'selected':'' %>>🟢 Low</option>
+    </select>
+    <select name="category" onchange="this.form.submit()">
+      <option value="">All Categories</option>
+      <option value="corruption">Corruption</option>
+      <option value="fraud">Fraud</option>
+      <option value="harassment">Harassment</option>
+      <option value="cybercrime">Cybercrime</option>
+      <option value="environmental">Environmental</option>
+      <option value="financial">Financial</option>
+      <option value="other">Other</option>
+    </select>
+    <% if (query.status || query.risk || query.category) { %>
+    <a href="/admin/reports" class="btn btn-ghost btn-sm">Clear Filters</a>
+    <% } %>
+  </form>
+</div>
+
+<div class="dash-card">
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Ack #</th>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Severity</th>
+          <th>Risk Score</th>
+          <th>Threat</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% reports.forEach(r => { %>
+        <tr class="<%= r.riskScore.level === 'critical' ? 'row-critical' : r.riskScore.level === 'high' ? 'row-high' : '' %>">
+          <td class="mono"><%= r.ackNumber %></td>
+          <td><%= r.title.substring(0, 45) %><%= r.title.length > 45 ? '...' : '' %></td>
+          <td><span class="tag"><%= r.category %></span></td>
+          <td><span class="severity-badge <%= r.severity %>"><%= r.severity %></span></td>
+          <td>
+            <div class="score-cell">
+              <span class="risk-badge <%= r.riskScore.level %>"><%= r.riskScore.level %></span>
+              <span class="score-num"><%= r.riskScore.score %>/100</span>
+            </div>
+          </td>
+          <td>
+            <% if (r.threatFlags.suspicionScore >= 50) { %>
+            <span class="threat-flag"><i class="fas fa-flag"></i> <%= r.threatFlags.suspicionScore %>%</span>
+            <% } else { %>
+            <span class="threat-clear"><i class="fas fa-check"></i> OK</span>
+            <% } %>
+          </td>
+          <td><span class="status-badge <%= r.status %>"><%= r.status.replace('_',' ') %></span></td>
+          <td class="date-cell"><%= new Date(r.submittedAt).toLocaleDateString() %></td>
+          <td><a href="/admin/reports/<%= r._id %>" class="btn btn-primary btn-xs">View</a></td>
+        </tr>
+        <% }) %>
+        <% if (!reports.length) { %>
+        <tr><td colspan="9" class="empty-row"><i class="fas fa-inbox"></i> No reports match filters</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <% if (totalPages > 1) { %>
+  <div class="pagination">
+    <% for(let i = 1; i <= totalPages; i++) { %>
+    <a href="/admin/reports?page=<%= i %>&status=<%= query.status||'' %>&risk=<%= query.risk||'' %>&category=<%= query.category||'' %>"
+      class="page-btn <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+    <% } %>
+  </div>
+  <% } %>
+</div>
+
+<%- include('../partials/adminClose') %>

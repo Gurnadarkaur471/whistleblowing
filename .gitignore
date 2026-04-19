@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Environment Variables (Critical Security)
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# File Uploads / Generated Content
+uploads/
+coverage/
+
+# OS/Editor Folders
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+
+# Render environment files
+.render-cache/

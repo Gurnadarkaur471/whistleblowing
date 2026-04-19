@@ -1,0 +1,159 @@
+<%- include('../partials/head') %>
+<% locals.currentPage = 'dashboard'; %>
+<%- include('../partials/adminSidebar', { admin, csrfToken: locals.csrfToken || '' }) %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="page-title">Security Dashboard</h1>
+    <p class="page-subtitle">Real-time threat monitoring & report analytics</p>
+  </div>
+  <div class="header-time" id="liveTime"></div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon total"><i class="fas fa-file-shield"></i></div>
+    <div class="stat-info">
+      <span class="stat-number"><%= stats.totalReports %></span>
+      <span class="stat-label">Total Reports</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon pending"><i class="fas fa-clock"></i></div>
+    <div class="stat-info">
+      <span class="stat-number"><%= stats.pendingReports %></span>
+      <span class="stat-label">Pending Review</span>
+    </div>
+  </div>
+  <div class="stat-card alert-card">
+    <div class="stat-icon high"><i class="fas fa-triangle-exclamation"></i></div>
+    <div class="stat-info">
+      <span class="stat-number"><%= stats.highRiskCount + stats.criticalRiskCount %></span>
+      <span class="stat-label">High Risk Reports</span>
+    </div>
+  </div>
+  <div class="stat-card alert-card critical">
+    <div class="stat-icon critical-icon"><i class="fas fa-skull-crossbones"></i></div>
+    <div class="stat-info">
+      <span class="stat-number"><%= stats.criticalRiskCount %></span>
+      <span class="stat-label">Critical Alerts</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon suspicious"><i class="fas fa-bug"></i></div>
+    <div class="stat-info">
+      <span class="stat-number"><%= stats.suspiciousCount %></span>
+      <span class="stat-label">Suspicious Activity</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon resolved"><i class="fas fa-circle-check"></i></div>
+    <div class="stat-info">
+      <span class="stat-number"><%= stats.resolvedReports %></span>
+      <span class="stat-label">Resolved</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="dashboard-grid">
+  <!-- Recent Reports -->
+  <div class="dash-card span-2">
+    <div class="dash-card-header">
+      <h3><i class="fas fa-list-ul"></i> Recent Reports</h3>
+      <a href="/admin/reports" class="btn btn-outline btn-sm">View All</a>
+    </div>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Ack #</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Risk</th>
+            <th>Threat</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentReports.forEach(r => { %>
+          <tr class="<%= r.riskScore.level === 'critical' ? 'row-critical' : r.riskScore.level === 'high' ? 'row-high' : '' %>">
+            <td class="mono"><%= r.ackNumber %></td>
+            <td class="report-title-cell"><%= r.title.substring(0, 40) %><%= r.title.length > 40 ? '...' : '' %></td>
+            <td><span class="tag"><%= r.category %></span></td>
+            <td><span class="risk-badge <%= r.riskScore.level %>"><%= r.riskScore.level %></span></td>
+            <td>
+              <% if (r.threatFlags.suspicionScore >= 50) { %>
+              <span class="threat-flag"><i class="fas fa-flag"></i> <%= r.threatFlags.suspicionScore %>%</span>
+              <% } else { %>
+              <span class="threat-clear"><i class="fas fa-check"></i> Clear</span>
+              <% } %>
+            </td>
+            <td><span class="status-badge <%= r.status %>"><%= r.status.replace('_',' ') %></span></td>
+            <td class="date-cell"><%= new Date(r.submittedAt).toLocaleDateString() %></td>
+            <td><a href="/admin/reports/<%= r._id %>" class="btn btn-ghost btn-xs"><i class="fas fa-eye"></i></a></td>
+          </tr>
+          <% }) %>
+          <% if (!recentReports.length) { %>
+          <tr><td colspan="8" class="empty-row"><i class="fas fa-inbox"></i> No reports yet</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Category Distribution -->
+  <div class="dash-card">
+    <div class="dash-card-header"><h3><i class="fas fa-chart-pie"></i> By Category</h3></div>
+    <div class="category-list">
+      <% const categoryColors = {corruption:'#ef4444',fraud:'#f97316',harassment:'#eab308',cybercrime:'#8b5cf6',environmental:'#22c55e',financial:'#3b82f6',other:'#6b7280'}; %>
+      <% categoryStats.forEach(c => { %>
+      <div class="category-row">
+        <div class="cat-label">
+          <span class="cat-dot" style="background:<%= categoryColors[c._id] || '#6b7280' %>"></span>
+          <%= c._id %>
+        </div>
+        <div class="cat-bar-wrap">
+          <div class="cat-bar" style="width:<%= Math.round((c.count / stats.totalReports) * 100) || 0 %>%; background:<%= categoryColors[c._id] || '#6b7280' %>"></div>
+        </div>
+        <span class="cat-count"><%= c.count %></span>
+      </div>
+      <% }) %>
+      <% if (!categoryStats.length) { %><p class="empty-msg">No data yet</p><% } %>
+    </div>
+  </div>
+
+  <!-- Audit Log -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <h3><i class="fas fa-scroll"></i> Recent Audit Log</h3>
+      <a href="/admin/audit-logs" class="btn btn-outline btn-sm">Full Log</a>
+    </div>
+    <div class="audit-list">
+      <% recentAuditLogs.forEach(log => { %>
+      <div class="audit-item">
+        <div class="audit-icon"><i class="fas fa-user-shield"></i></div>
+        <div class="audit-info">
+          <span class="audit-action"><%= log.action %></span>
+          <span class="audit-meta"><%= log.adminEmail %> · <%= new Date(log.timestamp).toLocaleString() %></span>
+          <% if (log.details) { %><span class="audit-detail"><%= log.details %></span><% } %>
+        </div>
+      </div>
+      <% }) %>
+      <% if (!recentAuditLogs.length) { %><p class="empty-msg">No actions logged yet</p><% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/adminClose') %>
+<script>
+  function updateTime() {
+    const el = document.getElementById('liveTime');
+    if (el) el.textContent = new Date().toLocaleString();
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+</script>

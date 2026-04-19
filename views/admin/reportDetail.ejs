@@ -1,0 +1,393 @@
+<%- include('../partials/head') %>
+<% locals.currentPage = 'reports'; %>
+<%- include('../partials/adminSidebar', { admin, csrfToken: locals.csrfToken || '' }) %>
+
+<div class="admin-header">
+  <div>
+    <h1 class="page-title">Report Detail</h1>
+    <p class="page-subtitle mono"><%= report.ackNumber %></p>
+  </div>
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <a href="/admin/reports/<%= report._id %>/forensic-pdf" class="btn btn-sm" id="download-forensic-pdf" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: all 0.3s ease; box-shadow: 0 2px 12px rgba(59,130,246,0.3);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 20px rgba(59,130,246,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(59,130,246,0.3)'">
+      <i class="fas fa-file-pdf"></i> Download Forensic PDF
+    </a>
+    <a href="/admin/reports" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Back to Reports</a>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <!-- Left Column -->
+  <div class="detail-main">
+
+    <!-- Report Info -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h3><i class="fas fa-file-lines"></i> Report Information</h3>
+        <div class="badge-group">
+          <span class="risk-badge <%= report.riskScore.level %>">Risk: <%= report.riskScore.level %> (<%= report.riskScore.score %>/100)</span>
+          <span class="severity-badge <%= report.severity %>"><%= report.severity %></span>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="d-label">Title</span>
+          <span class="d-value"><%= report.title %></span>
+        </div>
+        <div class="detail-row">
+          <span class="d-label">Category</span>
+          <span class="d-value"><span class="tag"><%= report.category %></span></span>
+        </div>
+        <div class="detail-row">
+          <span class="d-label">Location</span>
+          <span class="d-value"><%= report.location || 'Not specified' %></span>
+        </div>
+        <div class="detail-row">
+          <span class="d-label">Accused Organization</span>
+          <span class="d-value"><%= report.accusedOrganization || 'Not specified' %></span>
+        </div>
+        <% if (report.accusedPersons && report.accusedPersons.length) { %>
+        <div class="detail-row">
+          <span class="d-label">Accused Persons</span>
+          <span class="d-value"><%= report.accusedPersons.join(', ') %></span>
+        </div>
+        <% } %>
+        <div class="detail-row full">
+          <span class="d-label">Description</span>
+          <div class="d-value description-box"><%= report.description %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reporter Identity (Decrypted) -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h3><i class="fas fa-user-secret"></i> Reporter Identity <span class="encrypted-tag"><i class="fas fa-lock"></i> AES-256 Decrypted</span></h3>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="d-label">Name</span>
+          <span class="d-value"><%= decryptedName %></span>
+        </div>
+        <div class="detail-row">
+          <span class="d-label">Contact</span>
+          <span class="d-value"><%= decryptedContact %></span>
+        </div>
+        <div class="detail-row">
+          <span class="d-label">IP Hash (SHA-256)</span>
+          <span class="d-value mono" style="font-size:11px;word-break:break-all"><%= report.ipHash || 'N/A' %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Evidence Files -->
+    <% if (report.evidenceFiles && report.evidenceFiles.length) { %>
+    <div class="dash-card">
+      <div class="dash-card-header"><h3><i class="fas fa-paperclip"></i> Evidence Files</h3></div>
+      <div class="evidence-list">
+        <% report.evidenceFiles.forEach(f => { %>
+        <div class="evidence-item">
+          <i class="fas fa-file"></i>
+          <span><%= f.originalName %></span>
+          <span class="file-meta"><%= f.mimeType %> · <%= (f.size/1024).toFixed(1) %>KB</span>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Audio Evidence -->
+    <% if (report.audioEvidence && report.audioEvidence.length) { %>
+    <div class="dash-card">
+      <div class="dash-card-header"><h3><i class="fas fa-microphone-lines"></i> Audio Evidence</h3></div>
+      <div class="evidence-list">
+        <% report.audioEvidence.forEach(a => { %>
+        <div class="evidence-item" style="display:flex; flex-direction:column; gap:10px; align-items:flex-start;">
+          <div style="font-size:12px; color:#64748b;">Uploaded: <%= new Date(a.uploadedAt).toLocaleString() %></div>
+          <audio controls src="/admin/audio/<%= a.filePath %>" style="width:100%; max-width:400px; height: 40px;"></audio>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Secure Anonymous Chat -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h3><i class="fas fa-comment-dots"></i> Anonymous Chat</h3>
+        <span class="encrypted-tag"><i class="fas fa-lock"></i> E2E Encrypted</span>
+      </div>
+      <div class="detail-body">
+        <div id="adminMessageList" style="max-height: 300px; overflow-y: auto; background:#f8fafc; border-radius:8px; padding:15px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;">
+          <% if (decryptedMessages && decryptedMessages.length) { %>
+            <% decryptedMessages.forEach(msg => { 
+                const isUser = msg.sender === 'user';
+            %>
+            <div style="align-self:<%= isUser ? 'flex-start' : 'flex-end' %>; background:<%= isUser ? '#e2e8f0' : '#3b82f6' %>; color:<%= isUser ? '#1e293b' : '#fff' %>; padding:10px 15px; border-radius:8px; max-width:80%; font-size:14px; word-break:break-word;">
+              <strong><%= isUser ? 'Whistleblower' : 'You' %></strong> <span style="font-size:11px; opacity:0.8; margin-left:8px;"><%= new Date(msg.timestamp).toLocaleString() %></span>
+              <div style="margin-top:5px;"><%= msg.text %></div>
+            </div>
+            <% }) %>
+          <% } else { %>
+            <p style="text-align:center; color:#94a3b8; font-size:13px;">No messages yet...</p>
+          <% } %>
+        </div>
+
+        <form action="/admin/message/reply/<%= report._id %>" method="POST" style="display:flex; gap:10px;">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <input type="text" name="text" placeholder="Type a secure reply..." required style="flex:1;" autocomplete="off" />
+          <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Reply</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Column -->
+  <div class="detail-sidebar">
+
+    <!-- Status Update -->
+    <div class="dash-card">
+      <div class="dash-card-header"><h3><i class="fas fa-pen-to-square"></i> Update Status</h3></div>
+      <form action="/admin/reports/<%= report._id %>/status" method="POST" class="status-form">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <div class="form-group">
+          <label>Status</label>
+          <select name="status">
+            <option value="pending" <%= report.status==='pending'?'selected':'' %>>Pending</option>
+            <option value="under_review" <%= report.status==='under_review'?'selected':'' %>>Under Review</option>
+            <option value="investigating" <%= report.status==='investigating'?'selected':'' %>>Investigating</option>
+            <option value="resolved" <%= report.status==='resolved'?'selected':'' %>>Resolved</option>
+            <option value="dismissed" <%= report.status==='dismissed'?'selected':'' %>>Dismissed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Admin Notes</label>
+          <textarea name="adminNotes" rows="4" placeholder="Internal notes about this report..."><%= report.adminNotes || '' %></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </form>
+    </div>
+
+    <!-- Risk Analysis -->
+    <div class="dash-card">
+      <div class="dash-card-header"><h3><i class="fas fa-chart-bar"></i> Risk Analysis</h3></div>
+      <div class="risk-meter">
+        <div class="meter-label">Risk Score: <%= report.riskScore.score %>/100</div>
+        <div class="meter-bar">
+          <div class="meter-fill <%= report.riskScore.level %>" style="width:<%= report.riskScore.score %>%"></div>
+        </div>
+        <span class="risk-badge <%= report.riskScore.level %>" style="margin-top:8px"><%= report.riskScore.level.toUpperCase() %></span>
+      </div>
+      <% if (report.riskScore.factors && report.riskScore.factors.length) { %>
+      <div class="risk-factors">
+        <p class="factor-title">Risk Factors:</p>
+        <% report.riskScore.factors.forEach(f => { %>
+        <div class="factor-item"><i class="fas fa-circle-dot"></i> <%= f %></div>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Threat Flags -->
+    <div class="dash-card">
+      <div class="dash-card-header"><h3><i class="fas fa-shield-virus"></i> Threat Detection</h3></div>
+      <div class="threat-info">
+        <div class="threat-row">
+          <span>Suspicion Score</span>
+          <span class="<%= report.threatFlags.suspicionScore >= 50 ? 'danger' : 'safe' %>">
+            <%= report.threatFlags.suspicionScore %>%
+          </span>
+        </div>
+        <div class="threat-row">
+          <span>Duplicate Content</span>
+          <span class="<%= report.threatFlags.isDuplicate ? 'danger' : 'safe' %>">
+            <%= report.threatFlags.isDuplicate ? '⚠️ Yes' : '✓ No' %>
+          </span>
+        </div>
+        <div class="threat-row">
+          <span>Spam Detected</span>
+          <span class="<%= report.threatFlags.isSpam ? 'danger' : 'safe' %>">
+            <%= report.threatFlags.isSpam ? '⚠️ Yes' : '✓ No' %>
+          </span>
+        </div>
+        <% if (report.threatFlags.flags && report.threatFlags.flags.length) { %>
+        <div class="threat-flags-list">
+          <% report.threatFlags.flags.forEach(f => { %>
+          <div class="flag-item"><i class="fas fa-flag"></i> <%= f %></div>
+          <% }) %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Blockchain Integrity -->
+    <div class="dash-card" id="blockchain-card" style="border: 1px solid rgba(20, 184, 166,0.2); background: linear-gradient(135deg, rgba(20, 184, 166,0.03), rgba(139,92,246,0.03));">
+      <div class="dash-card-header">
+        <h3><i class="fas fa-link"></i> Blockchain Integrity</h3>
+        <span class="encrypted-tag"><i class="fas fa-shield-halved"></i> SHA-256</span>
+      </div>
+      <div class="detail-body" id="blockchain-body">
+        <!-- Loaded dynamically via JS -->
+        <div style="text-align: center; padding: 20px; color: var(--text-3);">
+          <i class="fas fa-spinner fa-spin" style="font-size: 20px; margin-bottom: 8px;"></i>
+          <p style="font-size: 13px;">Loading blockchain status...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integrity Chain (Content Hash) -->
+    <div class="dash-card">
+      <div class="dash-card-header"><h3><i class="fas fa-fingerprint"></i> Content Integrity</h3></div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="d-label">Content Hash</span>
+          <span class="d-value mono hash-val"><%= report.contentHash %></span>
+        </div>
+        <div class="detail-row">
+          <span class="d-label">Previous Hash</span>
+          <span class="d-value mono hash-val"><%= report.previousHash %></span>
+        </div>
+        <div class="detail-row">
+          <span class="d-label">Submitted</span>
+          <span class="d-value"><%= new Date(report.submittedAt).toLocaleString() %></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forensic PDF Download -->
+    <div class="dash-card" style="border: 1px solid rgba(59,130,246,0.3); background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(139,92,246,0.05));">
+      <div class="dash-card-header"><h3><i class="fas fa-file-shield"></i> Forensic Report</h3></div>
+      <div style="padding: 16px; text-align: center;">
+        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 16px; line-height: 1.5;">
+          Generate a comprehensive forensic PDF with decrypted details, SHA-256 hashes, integrity verification, audit trail, and risk analysis.
+        </p>
+        <a href="/admin/reports/<%= report._id %>/forensic-pdf" class="btn" id="sidebar-forensic-pdf" style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; width: 100%; justify-content: center; transition: all 0.3s ease; box-shadow: 0 2px 16px rgba(59,130,246,0.3); font-size: 14px;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 24px rgba(59,130,246,0.5)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 16px rgba(59,130,246,0.3)'">
+          <i class="fas fa-download"></i> Download Forensic PDF
+        </a>
+        <p style="color: #475569; font-size: 11px; margin-top: 10px;"><i class="fas fa-lock" style="margin-right: 4px;"></i> Admin-only · Audit logged</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Blockchain Integrity Script -->
+<script>
+(function() {
+  const reportId = '<%= report._id %>';
+  const csrfToken = '<%= csrfToken %>';
+  const blockchainBody = document.getElementById('blockchain-body');
+
+  function shortenHash(hash) {
+    if (!hash || hash.length < 16) return hash || '—';
+    return hash.substring(0, 8) + '...' + hash.substring(hash.length - 6);
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '—';
+    const d = new Date(dateStr);
+    return d.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+  }
+
+  function renderBlockchainStatus(data) {
+    if (!data.exists && !data.blockchain) {
+      blockchainBody.innerHTML = `
+        <div style="text-align: center; padding: 16px;">
+          <div style="font-size: 32px; margin-bottom: 10px; opacity: 0.4;">🔗</div>
+          <p style="color: var(--text-3); font-size: 13px; margin-bottom: 12px;">No blockchain data yet.</p>
+          <p style="color: var(--text-3); font-size: 11px;">Generate a Forensic PDF to create a blockchain entry.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const bc = data.blockchain;
+    const isVerified = bc.verified;
+    const statusClass = isVerified ? 'bc-verified' : 'bc-tampered';
+    const statusText = isVerified ? '✅ Verified' : '❌ Tampered';
+    const statusColor = isVerified ? 'var(--green)' : 'var(--red)';
+    const statusBg = isVerified ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)';
+    const statusBorder = isVerified ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)';
+
+    blockchainBody.innerHTML = `
+      <div style="text-align: center; margin-bottom: 16px;">
+        <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 18px; border-radius: 50px; font-size: 13px; font-weight: 700; background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusBorder};">${statusText}</span>
+      </div>
+      <div class="detail-row">
+        <span class="d-label">Block ID</span>
+        <span class="d-value" style="font-family: var(--mono); color: var(--accent); font-weight: 700;">#${bc.blockId}</span>
+      </div>
+      <div class="detail-row">
+        <span class="d-label">Block Hash</span>
+        <span class="d-value mono hash-val" title="${bc.hash}">${shortenHash(bc.hash)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="d-label">Previous Hash</span>
+        <span class="d-value mono hash-val" title="${bc.previousHash}">${shortenHash(bc.previousHash)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="d-label">PDF Hash</span>
+        <span class="d-value mono hash-val" title="${bc.pdfHash}">${shortenHash(bc.pdfHash)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="d-label">Timestamp</span>
+        <span class="d-value">${formatDate(bc.timestamp)}</span>
+      </div>
+      <div style="margin-top: 12px; text-align: center;">
+        <button id="reverify-btn" onclick="reVerifyBlockchain()" style="background: linear-gradient(135deg, rgba(20, 184, 166,0.1), rgba(139,92,246,0.1)); border: 1px solid rgba(20, 184, 166,0.25); color: var(--accent); padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+          <i class="fas fa-rotate"></i> Re-Verify Integrity
+        </button>
+      </div>
+    `;
+  }
+
+  // Load blockchain status on page load
+  fetch('/admin/reports/' + reportId + '/blockchain-status')
+    .then(r => r.json())
+    .then(data => renderBlockchainStatus(data))
+    .catch(err => {
+      blockchainBody.innerHTML = '<p style="text-align:center; color:var(--red); font-size:13px; padding:16px;">Failed to load blockchain status.</p>';
+    });
+
+  // Re-verify function (global scope)
+  window.reVerifyBlockchain = function() {
+    const btn = document.getElementById('reverify-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+    }
+
+    fetch('/admin/reports/' + reportId + '/verify-blockchain', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'CSRF-Token': csrfToken,
+      },
+      body: JSON.stringify({ _csrf: csrfToken }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.blockchain) {
+        renderBlockchainStatus({ exists: true, blockchain: { ...data.blockchain, verified: data.verified } });
+      }
+      // Flash the card border briefly
+      const card = document.getElementById('blockchain-card');
+      card.style.borderColor = data.verified ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)';
+      card.style.boxShadow = data.verified ? '0 0 20px rgba(34,197,94,0.15)' : '0 0 20px rgba(239,68,68,0.15)';
+      setTimeout(() => {
+        card.style.borderColor = 'rgba(20, 184, 166,0.2)';
+        card.style.boxShadow = 'none';
+      }, 3000);
+    })
+    .catch(err => {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-rotate"></i> Re-Verify Integrity';
+      }
+      alert('Verification failed. Please try again.');
+    });
+  };
+})();
+</script>
+
+<%- include('../partials/adminClose') %>

@@ -1,0 +1,196 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="page-wrapper">
+  <div class="form-page">
+    <div class="form-header">
+      <div class="form-badge"><i class="fas fa-lock"></i> Encrypted & Anonymous</div>
+      <h1>Submit Anonymous Report</h1>
+      <p>Your identity is protected. All data is encrypted with AES-256 before storage.</p>
+    </div>
+
+    <% if (errors && errors.length > 0) { %>
+    <div class="alert alert-error">
+      <i class="fas fa-triangle-exclamation"></i>
+      <ul>
+        <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+      </ul>
+    </div>
+    <% } %>
+
+    <form action="/report/submit?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data" class="report-form" id="reportForm">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+
+      <!-- Section 1: Report Details -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">01</span>
+          <h2>Report Details</h2>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category <span class="required">*</span></label>
+          <select name="category" id="category" required>
+            <option value="" disabled selected>Select a category...</option>
+            <option value="corruption" <%= formData.category === 'corruption' ? 'selected':'' %>>🏛️ Government Corruption</option>
+            <option value="fraud" <%= formData.category === 'fraud' ? 'selected':'' %>>💰 Financial Fraud</option>
+            <option value="harassment" <%= formData.category === 'harassment' ? 'selected':'' %>>⚠️ Workplace Harassment</option>
+            <option value="cybercrime" <%= formData.category === 'cybercrime' ? 'selected':'' %>>💻 Cybercrime / Data Breach</option>
+            <option value="environmental" <%= formData.category === 'environmental' ? 'selected':'' %>>🌍 Environmental Violation</option>
+            <option value="financial" <%= formData.category === 'financial' ? 'selected':'' %>>📊 Corporate Financial Crime</option>
+            <option value="other" <%= formData.category === 'other' ? 'selected':'' %>>📋 Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="severity">Severity Level <span class="required">*</span></label>
+          <div class="severity-grid">
+            <label class="severity-option">
+              <input type="radio" name="severity" value="low" <%= formData.severity === 'low' ? 'checked':'' %> />
+              <span class="severity-card low">🟢 Low</span>
+            </label>
+            <label class="severity-option">
+              <input type="radio" name="severity" value="medium" <%= formData.severity === 'medium' ? 'checked':'' %> />
+              <span class="severity-card medium">🟡 Medium</span>
+            </label>
+            <label class="severity-option">
+              <input type="radio" name="severity" value="high" <%= formData.severity === 'high' ? 'checked':'' %> />
+              <span class="severity-card high">🟠 High</span>
+            </label>
+            <label class="severity-option">
+              <input type="radio" name="severity" value="critical" <%= formData.severity === 'critical' ? 'checked':'' %> />
+              <span class="severity-card critical">🔴 Critical</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="title">Report Title <span class="required">*</span></label>
+          <input type="text" id="title" name="title" placeholder="Brief description of the incident (10–200 characters)"
+            value="<%= formData.title || '' %>" minlength="10" maxlength="200" required />
+          <span class="char-count" id="titleCount">0/200</span>
+        </div>
+
+        <div class="form-group">
+          <label for="description">
+            Detailed Description <span class="required">*</span>
+            <button type="button" id="micBtn" class="btn btn-sm btn-outline" style="float: right; padding: 4px 8px; font-size: 12px; margin-top: -4px;">
+              <i class="fas fa-microphone"></i> Start Dictation
+            </button>
+          </label>
+          <textarea id="description" name="description" rows="7"
+            placeholder="Provide as much detail as possible. Include dates, locations, people involved, and what happened. (Minimum 30 characters)"
+            maxlength="5000" required><%= formData.description || '' %></textarea>
+          <span class="char-count" id="descCount">0/5000</span>
+          <span id="speechStatus" style="font-size: 12px; color: #3b82f6; display: none;"><i class="fas fa-circle blob red" style="color:red; animation: blink 1s infinite;"></i> Listening...</span>
+        </div>
+      </div>
+
+      <!-- Section 2: Accused Details -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">02</span>
+          <h2>Accused / Involved Parties</h2>
+        </div>
+
+        <div class="form-group">
+          <label for="accusedOrganization">Organization / Institution (Optional)</label>
+          <input type="text" id="accusedOrganization" name="accusedOrganization"
+            placeholder="e.g. XYZ Corporation, City Municipality"
+            value="<%= formData.accusedOrganization || '' %>" maxlength="300" />
+        </div>
+
+        <div class="form-group">
+          <label for="accusedPersons">Accused Person(s) — comma separated (Optional)</label>
+          <input type="text" id="accusedPersons" name="accusedPersons"
+            placeholder="e.g. John Doe, Jane Smith"
+            value="<%= formData.accusedPersons || '' %>" maxlength="500" />
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location of Incident (Optional)</label>
+          <input type="text" id="location" name="location"
+            placeholder="e.g. New Delhi, Block 4 Office"
+            value="<%= formData.location || '' %>" maxlength="200" />
+        </div>
+      </div>
+
+      <!-- Section 3: Evidence -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">03</span>
+          <h2>Evidence Upload (Optional)</h2>
+        </div>
+        <div class="upload-area" id="uploadArea">
+          <i class="fas fa-cloud-arrow-up"></i>
+          <p>Drag & drop files here or <label for="evidence" class="upload-link">browse</label></p>
+          <p class="upload-hint">Max 3 files • 5MB each • PDF, Images, DOC, Audio allowed</p>
+          <input type="file" name="evidence" id="evidence" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.txt,.mp3,.wav,.ogg,.webm,.m4a" />
+        </div>
+        <div id="fileList" class="file-list"></div>
+
+        <hr style="border:0; height:1px; background:var(--border); margin: 20px 0;">
+
+        <!-- Audio Evidence Recording UI -->
+        <div class="audio-evidence-recording">
+          <h3 style="font-size:14px; margin-bottom:12px;"><i class="fas fa-microphone-lines"></i> Record Audio Evidence (Optional)</h3>
+          <p style="font-size:12px; color:var(--text-3); margin-bottom:12px;">Record audio directly from your browser as proof or instead of typing.</p>
+          
+          <div class="audio-recorder-ui" style="display:flex; flex-direction:column; gap:15px; background:var(--bg-3); padding:16px; border-radius:8px; align-items:center; border: 1px solid var(--border);">
+            <div style="display:flex; gap:10px; width:100%; justify-content:center;">
+              <button type="button" id="startRecBtn" class="btn btn-outline" style="flex:1;"><i class="fas fa-circle" style="color:var(--red);"></i> Start Recording</button>
+              <button type="button" id="stopRecBtn" class="btn btn-outline" style="flex:1;" disabled><i class="fas fa-stop"></i> Stop</button>
+            </div>
+            <span id="recordingStatus" style="font-size:12px; color:var(--red); display:none; animation: blink 1s infinite;">Recording...</span>
+            
+            <div id="audioPreviewBlock" style="display:none; width:100%; text-align:center; flex-direction:column; gap:10px; align-items:center;">
+               <audio id="audioPlayback" controls style="width:100%; max-width:300px;"></audio>
+               <span style="font-size:11px; color:var(--green);"><i class="fas fa-check"></i> Audio attached. It will be uploaded on form submit.</span>
+               <input type="file" name="audioEvidence" id="audioBlobInput" style="display:none;" />
+               <button type="button" id="clearAudioBtn" class="btn btn-sm btn-outline"><i class="fas fa-trash"></i> Remove Audio</button>
+            </div>
+          </div>
+        </div>
+        <div class="security-note">
+          <i class="fas fa-shield-halved"></i>
+          Files are stored outside the public directory, renamed with random hashes, and metadata is stripped.
+        </div>
+      </div>
+
+      <!-- Section 4: Optional Identity (Encrypted) -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">04</span>
+          <h2>Optional Contact (Encrypted)</h2>
+        </div>
+        <div class="encrypted-notice">
+          <i class="fas fa-lock"></i>
+          <p>If provided, your name and contact details are <strong>encrypted with AES-256</strong> before storage. Only authorized admins can decrypt this. You can leave this blank to remain fully anonymous.</p>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reporterName">Your Name (Optional)</label>
+            <input type="text" id="reporterName" name="reporterName" placeholder="Leave blank for full anonymity" maxlength="100" />
+          </div>
+          <div class="form-group">
+            <label for="reporterContact">Contact Info (Optional)</label>
+            <input type="text" id="reporterContact" name="reporterContact" placeholder="Email or phone (encrypted)" maxlength="200" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-submit">
+        <div class="submit-notice">
+          <i class="fas fa-info-circle"></i>
+          By submitting, you confirm this report is truthful. False reports may be subject to legal consequences.
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-submit" id="submitBtn">
+          <i class="fas fa-paper-plane"></i> Submit Anonymous Report
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+<script src="/js/submit.js"></script>
