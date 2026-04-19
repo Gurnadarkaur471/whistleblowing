@@ -342,7 +342,7 @@
   }
 
   // Load blockchain status on page load
-  fetch('/admin/reports/' + reportId + '/blockchain-status')
+  fetch('/admin/reports/' + reportId + '/blockchain-status', { credentials: 'same-origin' })
     .then(r => r.json())
     .then(data => renderBlockchainStatus(data))
     .catch(err => {
@@ -359,6 +359,7 @@
 
     fetch('/admin/reports/' + reportId + '/verify-blockchain', {
       method: 'POST',
+      credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
         'CSRF-Token': csrfToken,

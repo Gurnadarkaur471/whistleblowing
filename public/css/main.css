@@ -1280,12 +1280,25 @@ a:hover { opacity: .8; }
   .step-arrow { display: none; }
 }
 @media (max-width: 600px) {
+  .navbar { padding: 0 12px; }
+  .nav-container { gap: 8px; }
+  .nav-brand { font-size: 18px; gap: 6px; }
+  .nav-brand .brand-icon { font-size: 18px; }
   .nav-links { display: none; }
-  .hero-title { font-size: 36px; }
+  .nav-cta .btn { padding: 7px 10px; font-size: 13px; }
+  
+  .hero { padding: 40px 16px; min-height: 80vh; }
+  .hero-title { font-size: 36px; margin-bottom: 16px; }
+  .hero-subtitle { font-size: 16px; padding: 0 10px; margin-bottom: 28px; }
+  .hero-actions { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto 36px auto; gap: 12px; }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+  .hero-security-badges { gap: 8px; }
+  .hero-security-badges .badge { padding: 4px 10px; font-size: 11px; }
+
   .admin-main { padding: 16px; }
   .summary-grid { grid-template-columns: 1fr; }
   .theme-toggle-btn .theme-label { display: none; }
-  .theme-toggle-btn { padding: 8px 10px; }
+  .theme-toggle-btn { padding: 7px 10px; }
 }
 
 @keyframes blink {

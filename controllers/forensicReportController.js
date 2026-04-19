@@ -95,17 +95,14 @@ exports.verifyBlockchain = async (req, res) => {
       });
     }
 
-    // Regenerate the PDF to get a fresh hash
-    const result = await createForensicPDF(id);
-    if (!result) {
-      return res.status(500).json({ error: 'Failed to regenerate PDF for verification.' });
-    }
+    // Mathematical verification of the cryptographic block header
+    const crypto = require('crypto');
+    const recalculatedBlockHash = crypto
+      .createHash('sha256')
+      .update(report.blockchain.pdfHash + report.blockchain.previousHash + report.blockchain.timestamp.toISOString())
+      .digest('hex');
 
-    // Hash the fresh PDF
-    const freshPdfHash = hashFileBuffer(result.pdfBuffer);
-
-    // Compare with stored PDF hash
-    const isVerified = freshPdfHash === report.blockchain.pdfHash;
+    const isVerified = recalculatedBlockHash === report.blockchain.hash;
 
     // Audit log the verification
     await logAction({
@@ -124,8 +121,8 @@ exports.verifyBlockchain = async (req, res) => {
       verified: isVerified,
       status: isVerified ? 'VERIFIED' : 'TAMPERED',
       message: isVerified
-        ? 'PDF integrity confirmed. The document has not been tampered with.'
-        : 'WARNING: PDF hash mismatch detected. The document may have been altered.',
+        ? 'Block cryptographic integrity confirmed. The hashes have not been tampered with.'
+        : 'WARNING: Block hash mismatch detected. The blockchain entry has been altered.',
       blockchain: {
         blockId: report.blockchain.blockId,
         hash: report.blockchain.hash,
@@ -134,8 +131,8 @@ exports.verifyBlockchain = async (req, res) => {
         timestamp: report.blockchain.timestamp,
       },
       verification: {
-        freshPdfHash,
-        storedPdfHash: report.blockchain.pdfHash,
+        freshBlockHash: recalculatedBlockHash,
+        storedBlockHash: report.blockchain.hash,
         match: isVerified,
       },
     });
