@@ -5,8 +5,8 @@
   <div class="form-page">
     <div class="form-header">
       <div class="form-badge"><i class="fas fa-lock"></i> Encrypted & Anonymous</div>
-      <h1>Submit Anonymous Report</h1>
-      <p>Your identity is protected. All data is encrypted with AES-256 before storage.</p>
+      <h1 data-i18n="submit_title">Submit Anonymous Report</h1>
+      <p data-i18n="submit_sub">Your identity is protected. All data is encrypted with AES-256 before storage.</p>
     </div>
 
     <% if (errors && errors.length > 0) { %>
@@ -25,13 +25,13 @@
       <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">01</span>
-          <h2>Report Details</h2>
+          <h2 data-i18n="submit_req">Report Details</h2>
         </div>
 
         <div class="form-group">
-          <label for="category">Category <span class="required">*</span></label>
-          <select name="category" id="category" required>
-            <option value="" disabled selected>Select a category...</option>
+          <label for="category"><span data-i18n="submit_type">Incident Type</span> <span class="required">*</span></label>
+          <select name="category" id="category" required data-i18n="submit_type_ph">
+            <option value="" disabled selected>Select the type of incident</option>
             <option value="corruption" <%= formData.category === 'corruption' ? 'selected':'' %>>🏛️ Government Corruption</option>
             <option value="fraud" <%= formData.category === 'fraud' ? 'selected':'' %>>💰 Financial Fraud</option>
             <option value="harassment" <%= formData.category === 'harassment' ? 'selected':'' %>>⚠️ Workplace Harassment</option>
@@ -73,13 +73,13 @@
 
         <div class="form-group">
           <label for="description">
-            Detailed Description <span class="required">*</span>
+            <span data-i18n="submit_desc">Incident Description</span> <span class="required">*</span>
             <button type="button" id="micBtn" class="btn btn-sm btn-outline" style="float: right; padding: 4px 8px; font-size: 12px; margin-top: -4px;">
               <i class="fas fa-microphone"></i> Start Dictation
             </button>
           </label>
-          <textarea id="description" name="description" rows="7"
-            placeholder="Provide as much detail as possible. Include dates, locations, people involved, and what happened. (Minimum 30 characters)"
+          <textarea id="description" name="description" rows="7" data-i18n="submit_desc_ph"
+            placeholder="Provide detailed information about what happened..."
             maxlength="5000" required><%= formData.description || '' %></textarea>
           <span class="char-count" id="descCount">0/5000</span>
           <span id="speechStatus" style="font-size: 12px; color: #3b82f6; display: none;"><i class="fas fa-circle blob red" style="color:red; animation: blink 1s infinite;"></i> Listening...</span>
@@ -119,12 +119,12 @@
       <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">03</span>
-          <h2>Evidence Upload (Optional)</h2>
+          <h2 data-i18n="submit_opt">Optional Evidence</h2>
         </div>
         <div class="upload-area" id="uploadArea">
           <i class="fas fa-cloud-arrow-up"></i>
           <p>Drag & drop files here or <label for="evidence" class="upload-link">browse</label></p>
-          <p class="upload-hint">Max 3 files • 5MB each • PDF, Images, DOC, Audio allowed</p>
+          <p class="upload-hint" data-i18n="submit_files">Upload Files (Max 5MB per file, max 3 files)</p>
           <input type="file" name="evidence" id="evidence" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.txt,.mp3,.wav,.ogg,.webm,.m4a" />
         </div>
         <div id="fileList" class="file-list"></div>
@@ -133,8 +133,8 @@
 
         <!-- Audio Evidence Recording UI -->
         <div class="audio-evidence-recording">
-          <h3 style="font-size:14px; margin-bottom:12px;"><i class="fas fa-microphone-lines"></i> Record Audio Evidence (Optional)</h3>
-          <p style="font-size:12px; color:var(--text-3); margin-bottom:12px;">Record audio directly from your browser as proof or instead of typing.</p>
+          <h3 style="font-size:14px; margin-bottom:12px;" data-i18n="submit_audio"><i class="fas fa-microphone-lines"></i> Voice Record (Optional)</h3>
+          <p style="font-size:12px; color:var(--text-3); margin-bottom:12px;" data-i18n="submit_audio_desc">You can securely record a voice note or upload audio evidence.</p>
           
           <div class="audio-recorder-ui" style="display:flex; flex-direction:column; gap:15px; background:var(--bg-3); padding:16px; border-radius:8px; align-items:center; border: 1px solid var(--border);">
             <div style="display:flex; gap:10px; width:100%; justify-content:center;">
@@ -182,10 +182,10 @@
       <div class="form-submit">
         <div class="submit-notice">
           <i class="fas fa-info-circle"></i>
-          By submitting, you confirm this report is truthful. False reports may be subject to legal consequences.
+          <span data-i18n="submit_confirm">I confirm that I am submitting this information anonymously and understand that I cannot edit this report after submission to preserve evidence integrity.</span>
         </div>
-        <button type="submit" class="btn btn-primary btn-lg btn-submit" id="submitBtn">
-          <i class="fas fa-paper-plane"></i> Submit Anonymous Report
+        <button type="submit" class="btn btn-primary btn-lg btn-submit" id="submitBtn" data-i18n="submit_btn">
+          <i class="fas fa-paper-plane"></i> Submit Secure Report
         </button>
       </div>
     </form>

@@ -5,15 +5,25 @@
       <span class="brand-text">Secure<span class="accent">Voice</span></span>
     </a>
     <div class="nav-links">
-      <a href="/" class="nav-link">Home</a>
-      <a href="/report/submit" class="nav-link">Submit Report</a>
-      <a href="/report/track" class="nav-link">Track Report</a>
+      <a href="/" class="nav-link" data-i18n="nav_home">Home</a>
+      <a href="/report/submit" class="nav-link" data-i18n="nav_submit">Submit Report</a>
+      <a href="/report/track" class="nav-link" data-i18n="nav_track">Track Report</a>
     </div>
-    <button class="theme-toggle-btn" aria-label="Switch to light mode" id="navbar-theme-toggle">
-      <i class="fas fa-sun"></i>
-      <span class="theme-label">Light Mode</span>
-    </button>
-    <a href="/report/submit" class="btn btn-primary nav-cta">
+    
+    <div class="nav-controls">
+      <select id="lang-selector" class="lang-select" aria-label="Select Language">
+        <option value="en">English (EN)</option>
+        <option value="hi">हिंदी (HI)</option>
+        <option value="hinglish">Hinglish (HN)</option>
+      </select>
+
+      <button class="theme-toggle-btn" aria-label="Switch to light mode" id="navbar-theme-toggle">
+        <i class="fas fa-sun"></i>
+        <span class="theme-label" data-i18n="nav_light_mode">Light Mode</span>
+      </button>
+    </div>
+
+    <a href="/report/submit" class="btn btn-primary nav-cta" data-i18n="nav_report_now">
       <i class="fas fa-flag"></i> Report Now
     </a>
   </div>

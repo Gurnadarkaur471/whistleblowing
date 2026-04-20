@@ -5,8 +5,8 @@
   <div class="form-page" style="max-width:600px">
     <div class="form-header">
       <div class="form-badge"><i class="fas fa-search"></i> Secure Lookup</div>
-      <h1>Track Your Report</h1>
-      <p>Enter your acknowledgement number to check the status of your submission.</p>
+      <h1 data-i18n="track_title">Track Your Report</h1>
+      <p data-i18n="track_sub">Enter your secure acknowledgement number to check the status of your anonymous report.</p>
     </div>
 
     <% if (error) { %>
@@ -16,15 +16,16 @@
     <form action="/report/track" method="POST" class="report-form">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <div class="form-group">
-        <label for="ackNumber">Acknowledgement Number</label>
+        <label for="ackNumber" data-i18n="track_input">Acknowledgement Number</label>
         <input type="text" id="ackNumber" name="ackNumber"
-          placeholder="e.g. SV-20240115-A3F2B1C9"
+          placeholder="e.g., SV-20240417-A1B2C3D4"
+          data-i18n="track_input_ph"
           pattern="SV-\d{8}-[A-F0-9]{8}"
           title="Format: SV-YYYYMMDD-XXXXXXXX"
           required style="font-family: 'JetBrains Mono', monospace; letter-spacing:2px; text-transform:uppercase" />
       </div>
-      <button type="submit" class="btn btn-primary btn-lg" style="width:100%">
-        <i class="fas fa-search"></i> Track Report
+      <button type="submit" class="btn btn-primary btn-lg" style="width:100%" data-i18n="track_btn">
+        <i class="fas fa-search"></i> Verify & Track Status
       </button>
     </form>
 

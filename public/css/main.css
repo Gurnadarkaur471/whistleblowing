@@ -127,6 +127,35 @@
   background: #f1f5f9 !important;
 }
 
+/* ─── LANGUAGE SWITCHER ───────────────────────── */
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.lang-select {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: var(--font);
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s ease;
+}
+.lang-select:hover, .lang-select:focus {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+.lang-select option {
+  background: var(--bg-2);
+  color: var(--text);
+}
+
 /* ─── THEME TOGGLE BUTTON ───────────────────── */
 .theme-toggle-btn {
   display: inline-flex;
