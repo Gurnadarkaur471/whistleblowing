@@ -1085,7 +1085,7 @@ Structured forensic PDF generation with evidence, hashes, risk information, stat
 
 **Project:** SecureVoice — Anonymous Whistleblowing & Cybersecurity System
 
-**Academic Level:** B.Tech CSE — Semester 6
+**Academic Level:** B.Tech CSE 
 
 **Domain:** Cybersecurity / Application Security / Digital Forensics
 
@@ -1099,7 +1099,7 @@ Structured forensic PDF generation with evidence, hashes, risk information, stat
 
 ### Gurnadar Kaur
 
-**B.Tech CSE — Semester 6**
+**B.Tech CSE **
 
 Cybersecurity • Application Security • Networking • Software Development
 
