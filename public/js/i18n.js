@@ -251,7 +251,11 @@ function updateContent() {
            // For simple text inputs
            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
               el.placeholder = translations[currentLang][key];
-           } else if (el.tagName === 'OPTION') { // handle selects
+           } else if (el.tagName === 'SELECT') {
+              // Only update the placeholder option, don't destroy all options
+              const placeholderOpt = el.querySelector('option[disabled]');
+              if (placeholderOpt) placeholderOpt.textContent = translations[currentLang][key];
+           } else if (el.tagName === 'OPTION') {
               el.textContent = translations[currentLang][key];
            } else {
               el.textContent = translations[currentLang][key];

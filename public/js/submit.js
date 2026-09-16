@@ -151,6 +151,7 @@
 
   let mediaRecorder;
   let audioChunks = [];
+  let recordingTimer = null;
 
   if (startRecBtn && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     startRecBtn.addEventListener('click', async () => {
@@ -160,12 +161,16 @@
         audioChunks = [];
 
         let startTime;
+        let elapsedSeconds = 0;
 
         mediaRecorder.ondataavailable = e => {
           if (e.data.size > 0) audioChunks.push(e.data);
         };
 
         mediaRecorder.onstop = () => {
+            // Clear the live timer
+            if (recordingTimer) { clearInterval(recordingTimer); recordingTimer = null; }
+
             if (audioChunks.length === 0) {
               alert('Recording failed: No microphone data captured.');
               return;
@@ -217,6 +222,16 @@
         recordingStatus.style.display = 'inline';
         audioPreviewBlock.style.display = 'none';
 
+        // ── Live elapsed timer ──
+        elapsedSeconds = 0;
+        recordingStatus.innerHTML = '<i class="fas fa-circle" style="color:var(--red); font-size:8px; vertical-align:middle; animation: blink 1s infinite;"></i> Recording... 0:00';
+        recordingTimer = setInterval(() => {
+          elapsedSeconds++;
+          const m = Math.floor(elapsedSeconds / 60);
+          const s = (elapsedSeconds % 60).toString().padStart(2, '0');
+          recordingStatus.innerHTML = `<i class="fas fa-circle" style="color:var(--red); font-size:8px; vertical-align:middle; animation: blink 1s infinite;"></i> Recording... ${m}:${s}`;
+        }, 1000);
+
       } catch (err) {
         console.error('Microphone access error:', err);
         alert('Could not access microphone.');
@@ -227,6 +242,7 @@
       if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
       }
+      if (recordingTimer) { clearInterval(recordingTimer); recordingTimer = null; }
       startRecBtn.disabled = false;
       stopRecBtn.disabled = true;
       recordingStatus.style.display = 'none';

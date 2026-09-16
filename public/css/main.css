@@ -1376,3 +1376,4 @@ a:hover { opacity: .8; }
 }
 
 .section-fade { width: 100%; height: 150px; background: linear-gradient(to bottom, transparent, var(--bg-2)); margin-top: -150px; position: relative; z-index: 2; pointer-events: none; }
+
