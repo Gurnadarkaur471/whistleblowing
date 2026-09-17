@@ -6,8 +6,8 @@
 
 <p align="center">
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-View%20Project-black?style=for-the-badge)](YOUR_LIVE_DEMO_URL)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge\&logo=github)](YOUR_GITHUB_URL)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-View%20Project-black?style=for-the-badge)](whistleblowing-txzn.onrender.comL)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge\&logo=github)](Yhttps://github.com/Gurnadarkaur471/whistleblowing)
 [![Node.js](https://img.shields.io/badge/Node.js-20+-339933?style=for-the-badge\&logo=node.js\&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express.js-Backend-black?style=for-the-badge\&logo=express)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=for-the-badge\&logo=mongodb\&logoColor=white)](https://www.mongodb.com/)
